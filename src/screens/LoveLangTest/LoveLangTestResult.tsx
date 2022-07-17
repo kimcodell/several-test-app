@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import RootStackParamList from '../../navigatorParamList/RootStackParamList';
 import LoveLangCount from '../../components/LoveLangCount';
-import LoveLangKeys from '../../types/LoveLangKeys';
 import {LoveLangTestKeyToLang} from '../../types/LoveLangTestKeyToLang';
+import data from '../../data/LoveLangTest/data';
+import LoveLangKeys from '../../types/LoveLangKeys';
 
 function LoveLangTestResult({
   navigation,
@@ -19,13 +20,24 @@ function LoveLangTestResult({
     params: {result},
   },
 }: NativeStackScreenProps<RootStackParamList, 'LoveLangTestResult'>) {
-  const onPressHome = useCallback(() => {
-    navigation.reset({
-      routes: [{name: 'Home'}],
-    });
-  }, [navigation]);
   const sortedResult = useMemo(() => {
-    return (Object.entries(result) as [LoveLangKeys, number][]).sort(
+    const arrangedResult = {
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
+      E: 0,
+    };
+    result.forEach((value, index) => {
+      if (value === 1) {
+        arrangedResult[data[index].question1.check] =
+          arrangedResult[data[index].question1.check] + 1;
+      } else {
+        arrangedResult[data[index].question2.check] =
+          arrangedResult[data[index].question2.check] + 1;
+      }
+    });
+    return (Object.entries(arrangedResult) as [LoveLangKeys, number][]).sort(
       (prev, curr) => {
         if (prev[1] < curr[1]) {
           return 1;
@@ -37,6 +49,12 @@ function LoveLangTestResult({
       },
     );
   }, [result]);
+
+  const onPressHome = useCallback(() => {
+    navigation.reset({
+      routes: [{name: 'Home'}],
+    });
+  }, [navigation]);
 
   const topLang = useMemo(
     () => sortedResult.filter(set => set[1] === sortedResult[0][1]),
@@ -50,15 +68,15 @@ function LoveLangTestResult({
           <View style={styles.resultContainer}>
             <Text style={styles.title}>테스트 결과</Text>
             <View>
-              {sortedResult.map((data, index) => (
-                <LoveLangCount data={data} key={index} index={index + 1} />
+              {sortedResult.map((key, index) => (
+                <LoveLangCount data={key} key={index} index={index + 1} />
               ))}
             </View>
           </View>
           <Text style={styles.explanation}>
             <Text>{'당신의 사랑의 언어는\n'}</Text>
-            {topLang.map((data, index) => (
-              <Text key={index}>{`'${LoveLangTestKeyToLang[data[0]]}'${
+            {topLang.map((lang, index) => (
+              <Text key={index}>{`'${LoveLangTestKeyToLang[lang[0]]}'${
                 topLang.length - 1 === index ? '' : ', '
               }`}</Text>
             ))}

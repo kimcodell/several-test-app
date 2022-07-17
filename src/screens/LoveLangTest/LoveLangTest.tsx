@@ -18,67 +18,55 @@ function LoveLangTest({
   const dataSet = useMemo(() => data, []);
   const [checked, setChecked] = useState(0);
   const [index, setIndex] = useState(0);
-  const [result, setResult] = useState({
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-    E: 0,
-  });
-  console.log(result, dataSet[index]);
+  const [historyStack, setHistoryStack] = useState<(1 | 2)[]>([]);
 
   const onQuestion1 = useCallback(() => {
     if (checked === 1) {
       return;
     }
-    if (checked === 2) {
-      setResult(prev => ({
-        ...prev,
-        [dataSet[index].question1.check]:
-          prev[dataSet[index].question1.check] + 1,
-        [dataSet[index].question2.check]:
-          prev[dataSet[index].question2.check] - 1,
-      }));
-    } else {
-      setResult(prev => ({
-        ...prev,
-        [dataSet[index].question1.check]:
-          prev[dataSet[index].question1.check] + 1,
-      }));
-    }
     setChecked(1);
-  }, [dataSet, index, checked]);
+    setHistoryStack(prev => {
+      const newArray = prev;
+      newArray[index] = 1;
+      return newArray;
+    });
+  }, [checked, index]);
 
   const onQuestion2 = useCallback(() => {
     if (checked === 2) {
       return;
     }
-    if (checked === 1) {
-      setResult(prev => ({
-        ...prev,
-        [dataSet[index].question1.check]:
-          prev[dataSet[index].question1.check] - 1,
-        [dataSet[index].question2.check]:
-          prev[dataSet[index].question2.check] + 1,
-      }));
-    } else {
-      setResult(prev => ({
-        ...prev,
-        [dataSet[index].question2.check]:
-          prev[dataSet[index].question2.check] + 1,
-      }));
-    }
     setChecked(2);
-  }, [dataSet, index, checked]);
+    setHistoryStack(prev => {
+      const newArray = prev;
+      newArray[index] = 2;
+      return newArray;
+    });
+  }, [index, checked]);
 
   const onPressNext = useCallback(() => {
+    if (checked === 0) {
+      return;
+    }
     if (index === dataSet.length - 1) {
-      navigation.navigate('LoveLangTestResult', {result});
+      navigation.navigate('LoveLangTestResult', {result: historyStack});
       return;
     }
     setChecked(0);
     setIndex(prev => prev + 1);
-  }, [navigation, index, dataSet, result]);
+  }, [navigation, index, dataSet, historyStack, checked]);
+
+  const onPressBack = useCallback(() => {
+    setIndex(prev => {
+      setChecked(historyStack[prev - 1]);
+      return prev - 1;
+    });
+    setHistoryStack(prev => {
+      prev.pop();
+      const reArray = prev;
+      return reArray;
+    });
+  }, [historyStack]);
 
   return (
     <SafeAreaView style={styles.flex}>
@@ -92,6 +80,14 @@ function LoveLangTest({
           />
         </View>
         <View>
+          {index === 0 ? null : (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onPressBack}
+              style={styles.backButtonContainer}>
+              <Text style={styles.backButtonText}>뒤로</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onPressNext}
@@ -117,6 +113,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+  },
+  backButtonContainer: {
+    ...Platform.select({
+      ios: {
+        shadowColor: '#C3C9D3',
+        shadowOffset: {
+          width: 1,
+          height: 4,
+        },
+        shadowOpacity: 0.8,
+        shadowRadius: 2.4,
+      },
+      android: {elevation: 5},
+    }),
+    borderRadius: 8,
+    paddingVertical: 16,
+    marginHorizontal: 20,
+    borderWidth: 2,
+    borderColor: '#414360',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  backButtonText: {
+    color: '#414360',
+    fontWeight: '700',
   },
   nextButtonContainer: {
     ...Platform.select({
