@@ -14,7 +14,7 @@ function LoveLangCount({data, index}: LoveLangCountProps) {
       <Text style={styles.text}>{`${index}. ${
         LoveLangTestKeyToLang[data[0]]
       }`}</Text>
-      <Text>{`${data[1]} 개`}</Text>
+      <Text style={styles.count}>{`${data[1]} 개`}</Text>
     </View>
   );
 }

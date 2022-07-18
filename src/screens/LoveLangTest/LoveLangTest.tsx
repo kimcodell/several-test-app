@@ -62,11 +62,11 @@ function LoveLangTest({
       setChecked(historyStack[prev - 1]);
       return prev - 1;
     });
-    setHistoryStack(prev => {
-      prev.pop();
-      const reArray = prev;
-      return reArray;
-    });
+    // setHistoryStack(prev => {
+    //   prev.pop();
+    //   const reArray = prev;
+    //   return reArray;
+    // });
   }, [historyStack]);
 
   return (

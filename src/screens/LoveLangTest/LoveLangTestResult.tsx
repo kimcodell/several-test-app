@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
     lineHeight: 24,
+    color: 'black'
   },
   buttonContainer: {
     ...Platform.select({
