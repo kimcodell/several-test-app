@@ -19,6 +19,7 @@ function LoveLangTest({
   const [checked, setChecked] = useState(0);
   const [index, setIndex] = useState(0);
   const [historyStack, setHistoryStack] = useState<(1 | 2)[]>([]);
+  console.log(historyStack, index);
 
   const onQuestion1 = useCallback(() => {
     if (checked === 1) {

@@ -20,6 +20,7 @@ function LoveLangTestResult({
     params: {result},
   },
 }: NativeStackScreenProps<RootStackParamList, 'LoveLangTestResult'>) {
+  console.log(result);
   const sortedResult = useMemo(() => {
     const arrangedResult = {
       A: 0,
